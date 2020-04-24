@@ -6,9 +6,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.vanroy.springdata.jest.JestElasticsearchTemplate;
 import com.github.vanroy.springdata.jest.mapper.DefaultJestResultsMapper;
 import io.searchbox.client.JestClient;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -20,9 +17,14 @@ import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverte
 import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
 import org.springframework.data.mapping.MappingException;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 public class ElasticsearchConfiguration {
+
     private ObjectMapper mapper;
 
     public ElasticsearchConfiguration(ObjectMapper mapper) {
@@ -36,20 +38,18 @@ public class ElasticsearchConfiguration {
 
     @Bean
     @Primary
-    public ElasticsearchOperations elasticsearchTemplate(
-        final JestClient jestClient,
-        final ElasticsearchConverter elasticsearchConverter,
-        final SimpleElasticsearchMappingContext simpleElasticsearchMappingContext,
-        EntityMapper mapper
-    ) {
+    public ElasticsearchOperations elasticsearchTemplate(final JestClient jestClient,
+                                                         final ElasticsearchConverter elasticsearchConverter,
+                                                         final SimpleElasticsearchMappingContext simpleElasticsearchMappingContext,
+                                                         EntityMapper mapper) {
         return new JestElasticsearchTemplate(
             jestClient,
             elasticsearchConverter,
-            new DefaultJestResultsMapper(simpleElasticsearchMappingContext, mapper)
-        );
+            new DefaultJestResultsMapper(simpleElasticsearchMappingContext, mapper));
     }
 
     public class CustomEntityMapper implements EntityMapper {
+
         private ObjectMapper objectMapper;
 
         public CustomEntityMapper(ObjectMapper objectMapper) {
@@ -81,7 +81,7 @@ public class ElasticsearchConfiguration {
         }
 
         @Override
-        public <T> T readObject(Map<String, Object> source, Class<T> targetType) {
+        public <T> T readObject (Map<String, Object> source, Class<T> targetType) {
             try {
                 return mapToObject(mapToString(source), targetType);
             } catch (IOException e) {
@@ -89,4 +89,5 @@ public class ElasticsearchConfiguration {
             }
         }
     }
+
 }
